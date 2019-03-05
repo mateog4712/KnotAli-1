@@ -15,6 +15,7 @@
 #include <ctime>
 
 #include "hfold_validation.h"
+#include "msa_utils.h"
 
 
 //change all {} [] to () in structure
@@ -240,3 +241,32 @@ bool validateHFOLDInputFile(char* path, char* seq1, char* struc1){
     return true;
 }
 
+//check if input file is in a supported MSA format, generate consensus seq and store value into corresponding variable
+//generate restrictions for HFold alignment and store value in corresponding variable.
+//return true on success, false on fail
+bool validateMSAInputFile(char *path, char *seq1, char *struc1){
+    if(!checkCLUSTALFormat(path)){
+        printf("File not in CLUSTAL format\n");
+        return false;
+    }
+
+    if(!generateConsensusSequence(path, seq1)){
+        printf("Error generating consensus sequence\n");
+        return false;
+    }
+    if(!generateMSARestrictionSequence(path, struc1)){
+        printf("Error generating restriction information\n");
+        return false;
+    }
+    if(!(validateSequence(seq1))){
+        printf("Consensus sequence is invalid\n");
+        return false;
+    }
+    //Should work fine with return restriction of '._ sequence
+    if(!(validateStructure(struc1,seq1))){
+        printf("Restriction information is invalid\n");
+        return false;
+    }
+
+    return true;
+}

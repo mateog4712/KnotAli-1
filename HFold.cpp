@@ -59,6 +59,7 @@ int main (int argc, char *argv[])
 	bool sequenceFound = false;
 	bool restrictedFound = false;
 	bool inputPathFound = false;
+	bool msaInputPathFound = false;
 	bool outputPathFound = false;
 	bool errorFound = false;
 	int option;
@@ -79,7 +80,7 @@ int main (int argc, char *argv[])
 		// getopt_long stores the option index here.
                 int option_index = 0;
 
-		option = getopt_long (argc, argv, "s:r:i:o:", long_options, &option_index);
+		option = getopt_long (argc, argv, "s:r:i:o:m:", long_options, &option_index);
 
 		// Detect the end of the options
 		if (option == -1)
@@ -143,6 +144,25 @@ int main (int argc, char *argv[])
 			}
 			outputPathFound = true;
 			break;
+		case 'm':
+			if(restrictedFound || sequenceFound){
+				fprintf(stderr, "Cannot combine -m with -s/-r \n");
+				errorFound = true;
+				break;
+			}
+			strcpy(inputPath,optarg);
+			if(access(inputPath, F_OK) == -1) { //if file does not exist
+				fprintf(stderr, "Input file not exist\n");
+				exit(4);
+			}
+			if (!validateMSAInputFile(inputPath, sequence, restricted)) {
+				fprintf(stderr, "Input file is invalid\n");
+				errorFound = true;
+				break;
+			}
+			//TODO Add MSA utils to strcopy the consensus sequence and restrictions.
+			msaInputPathFound = true;
+			break;
 		default:
 			errorFound = true;
 			break;
@@ -153,7 +173,7 @@ int main (int argc, char *argv[])
 			exit(1);
 		}
 	}
-
+	//TODO Add validation for msa -m option variable
 	if(!inputPathFound){
 		//if sequence or restricted is missing when input file is not present
 		if(!(sequenceFound && restrictedFound)){
