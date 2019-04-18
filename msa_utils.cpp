@@ -1,40 +1,90 @@
 //Joseph Zieg March 4 2019
 
 #include "msa_utils.h"
-#include <libgen.h>
+#include "constants.h"
 #include <iostream>
-#include <stdio.h>
 #include <string.h>
+#include <vector>
+#include <fstream>
+#include <stdio.h>
 #include <stdlib.h>
-#include <regex.h>
+#include <math.h>
 
 //TODO Implement functionality
-bool generateConsensusSequence(char* path, char* seq1){
-    return false;
+bool generateConsensusSequence(std::vector<std::string> seqList, char *seq) {
+
 }
 
 //TODO Implement functionality
-bool generateMSARestrictionSequence(char* path, char* struc1){
-    return false;
+bool generateRestrictionStructure(std::vector<std::string> seqList, char *struc) {
+
 }
 
-bool checkCLUSTALFormat(char* path){
-    FILE* fp;
-    char* header;
-    char clustal[7];
-    header = (char*) malloc(sizeof(char) * 100);
-    strcpy(clustal, "CLUSTAL");
+format detectMSAValidFormat(char *path) {
+    std::ifstream fp;
+    std::string header; // char array for buffer dequeue
+    size_t found; // flag for header verification.
 
-    fp = fopen(path, "r");
+    fp.open(path);
     if(!fp){
+        return MSA_UNKNOWN;
+    }
+    std::getline(fp, header);
+    found = header.find(">");
+    if (found != std::string::npos) {
+        return MSA_FASTA;
+    }
+    found = header.find("CLUSTAL");
+    if (found != std::string::npos) {
+        return MSA_CLUSTAL;
+    }
+    return MSA_UNKNOWN;
+}
+
+std::vector<std::string> readMSASequences(char *path, format type) {
+    std::ifstream fp;
+    std::string temp; // char array for buffer dequeue
+    std::vector<std::string> seqList;
+
+    switch (type) {
+        case MSA_FASTA:
+            seqList = readFASTASequences(path);
+            break;
+        default:
+            printf("Something went wrong with reading the file.");
+            break;
+    }
+    return seqList;
+}
+
+std::vector<std::string> readFASTASequences(char *path) {
+    std::ifstream fp;
+    std::string temp, seq; //char array for buffer dequeue
+    std::vector<std::string> seqList;
+
+    fp.open(path);
+    if (!fp) {
         printf("File not found\n");
-        return false;
+        exit(EXIT_FAILURE);
     }
-    fscanf(fp,"%s\n", header);
-    fclose(fp);
-    //reads header information to determine CLUSTAL format
-    if(strstr(header, clustal)){
-        return true;
+
+    while (getline(fp, temp).good()) {
+        // iterate through FASTA file, copy individual seq lines into single string,
+        // add to arr as new sequence comes up.
+        if (temp.empty() || temp[0] == '>') {
+            if (!seq.empty()) {
+                seqList.emplace_back(seq);
+                seq.clear();
+            }
+        } else if (!temp.empty()) {
+            seq += temp;
+        }
     }
-    return false;
+    if (!seq.empty()) {
+        seqList.emplace_back(seq);
+        seq.clear();
+    }
+    fp.close();
+
+    return seqList;
 }

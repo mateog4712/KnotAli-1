@@ -244,26 +244,28 @@ bool validateHFOLDInputFile(char* path, char* seq1, char* struc1){
 //check if input file is in a supported MSA format, generate consensus seq and store value into corresponding variable
 //generate restrictions for HFold alignment and store value in corresponding variable.
 //return true on success, false on fail
-bool validateMSAInputFile(char *path, char *seq1, char *struc1){
-    if(!checkCLUSTALFormat(path)){
-        printf("File not in CLUSTAL format\n");
+bool validateMSAInputFile(char *path, char *seq, char *struc) {
+
+    if (!detectMSAValidFormat(path)) {
+        printf("File not in valid format\n");
         return false;
     }
+    std::vector<std::string> seqList = readMSASequences(path, MSA_FASTA);
 
-    if(!generateConsensusSequence(path, seq1)){
+    if (!generateConsensusSequence(seqList, seq)) {
         printf("Error generating consensus sequence\n");
         return false;
     }
-    if(!generateMSARestrictionSequence(path, struc1)){
+    if (!generateRestrictionStructure(seqList, struc)) {
         printf("Error generating restriction information\n");
         return false;
     }
-    if(!(validateSequence(seq1))){
+    if (!(validateSequence(seq))) {
         printf("Consensus sequence is invalid\n");
         return false;
     }
     //Should work fine with return restriction of '._ sequence
-    if(!(validateStructure(struc1,seq1))){
+    if (!(validateStructure(struc, seq))) {
         printf("Restriction information is invalid\n");
         return false;
     }
