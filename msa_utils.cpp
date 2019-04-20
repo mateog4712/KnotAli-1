@@ -1,7 +1,6 @@
 //Joseph Zieg March 4 2019
 
 #include "msa_utils.h"
-#include "constants.h"
 #include <iostream>
 #include <string.h>
 #include <vector>
@@ -9,10 +8,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <map>
 
-//TODO Implement functionality
 bool generateConsensusSequence(std::vector<std::string> seqList, char *seq) {
+    /* simple consensus sequence (most frequent character) */
+    unsigned int i, n, s, n_seq;
 
+    n = seqList[0].length();
+    if (n > 0) {
+        // check seqList for consistency
+        for (s = 1; s < seqList.size(); s++) {
+            if (seqList[s].length() != n) {
+                fprintf(stderr, "Error generating consensus sequence: "
+                                "Length of aligned sequence #%d does not match length of first sequence.\n\n", s + 1);
+                return false;
+            }
+        }
+
+        n_seq = s++;
+
+        for (i = 0; i < n; i++) {
+            int fm = 0;
+            char c;
+            std::map<char, int> freq = {{'A', 0},
+                                        {'C', 0},
+                                        {'G', 0},
+                                        {'U', 0}};
+
+            for (s = 0; s < n_seq; s++)
+                freq[seqList[s][i]]++;
+            for (auto base : freq) // find most frequent base
+                if (base.second > fm && base.first != '-') {
+                    c = base.first;
+                    fm = base.second;
+                }
+
+            seq[i] = c;
+        }
+    }
+
+    return true;
 }
 
 //TODO Implement functionality
@@ -65,9 +100,8 @@ std::vector<std::string> readFASTASequences(char *path) {
     fp.open(path);
     if (!fp) {
         printf("File not found\n");
-        exit(EXIT_FAILURE);
+        exit(1);
     }
-
     while (getline(fp, temp).good()) {
         // iterate through FASTA file, copy individual seq lines into single string,
         // add to arr as new sequence comes up.

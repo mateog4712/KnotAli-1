@@ -156,7 +156,6 @@ int main (int argc, char *argv[])
 				exit(4);
 			}
 			if (!validateMSAInputFile(inputPath, sequence, restricted)) {
-				fprintf(stderr, "Input file is invalid\n");
 				errorFound = true;
 				break;
 			}
@@ -291,14 +290,15 @@ void printUsage(){
 	printf ("\t\t() restricted base pair\n");
 	printf ("\t\t _ no restriction\n");
 */
-	printf("Usage ./HFold --s <sequence> --r <structure> [--o </path/to/file>]\n");
+    printf("MSA Usage ./KnotAli --m </path/to/file> [--o </path/to/file>]\n\n");
+    printf("Single Sequence Usage ./KnotAli --s <sequence> --r <structure> [--o </path/to/file>]\n");
 	printf("or\n");
-	printf("Usage ./HFold --i </path/to/file> [--o </path/to/file>]\n");
+    printf("Usage ./KnotAli --i </path/to/file> [--o </path/to/file>]\n");
 	printf ("  Restricted structure symbols:\n");
 	printf ("    () restricted base pair\n");
-	printf ("    _ no restriction\n");
+    printf("    _ no restriction\n\n");
 	printf("Example:\n");
-	printf("./HFold --s \"GCAACGAUGACAUACAUCGCUAGUCGACGC\" --r \"(____________________________)\"\n");
-	printf("./HFold --i \"/home/username/Desktop/myinputfile.txt\" --o \"/home/username/Desktop/some_folder/outputfile.txt\"\n");
+    printf("./KnotAli --s \"GCAACGAUGACAUACAUCGCUAGUCGACGC\" --r \"(____________________________)\"\n");
+    printf("./KnotAli --i \"/home/username/Desktop/myinputfile.txt\" --o \"/home/username/Desktop/some_folder/outputfile.txt\"\n");
 	printf("Please read README for more details\n");
 }
