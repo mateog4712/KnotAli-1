@@ -255,7 +255,7 @@ bool validateMSAInputFile(char *path, char *seq, char *struc) {
     if (!generateConsensusSequence(seqList, seq)) {
         return false;
     }
-    if (!generateRestrictionStructure(seqList, struc)) {
+    if (!generateConservationStructure(seqList, struc)) {
         fprintf(stderr, "Error generating restriction information.\n");
         return false;
     }

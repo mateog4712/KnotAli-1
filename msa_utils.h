@@ -7,7 +7,6 @@
  * Joseph Zieg Mar 4 2019
  * Helper functions for converting MSA input files to consensus sequence and base restrictions.
  *
- * TODO: May want to restructure validation functions to take in pointers for variables instead of returning a pointer.
  */
 
 enum format {
@@ -20,7 +19,7 @@ enum format {
  * Returns true/false depending on success.
  * @param seqList The vector of sequences to generate consensus from.
  * @param seq The variable to write the sequence to.
- * @return
+ * @return true/false bool depending on successful updating of the consensus sequence.
  */
 bool generateConsensusSequence(std::vector<std::string> seqList, char *seq);
 
@@ -28,12 +27,14 @@ bool generateConsensusSequence(std::vector<std::string> seqList, char *seq);
  * TODO: Implement functionality.
  * Generates a restriction sequence for HFold using a Shannon entropy for each column.
  * Writes the generated sequence using '(_' chars to the corresponding variable.
- * Returns true/false depending on success.
+ *
+ *
+ *
  * @param seqList The vector of sequences to generate consensus from.
  * @param struc The variable to write the structure to.
- * @return
+ * @return true/false depending on success.
  */
-bool generateRestrictionStructure(std::vector<std::string> seqList, char *struc);
+bool generateConservationStructure(std::vector<std::string> seqList, char *struc);
 
 /**
  * Reads FASTA type MSA files. Does not check for actual FASTA format, checks done previously in detectMSAValidFormat.
@@ -46,14 +47,17 @@ bool generateRestrictionStructure(std::vector<std::string> seqList, char *struc)
 std::vector<std::string> readFASTASequences(char *path);
 
 /**
- * Reads CLUSTALw type MSA files. Does not check for actual FASTA format, checks done previously in detectMSAValidFormat.
+ * Reads CLUSTAL type MSA files. Does not check for actual CLUSTAL format,
+ * checks are done previously in detectMSAValidFormat.
+ *
+ *
  *
  * Should not be called outside readMSASequences.
  *
  * @param path The directory location of the file.
- * @return A char array of the RNA sequences.
+ * @return A char array of the RNA sequences, the last value being the conserved base information.
  */
-std::vector<std::string> readCLUSTALwSequences(char *path);
+std::vector<std::string> readCLUSTALSequences(char *path);
 
 /**
  * Master function for determining file type and reading an MSA file into a sequence list. Takes the determined
